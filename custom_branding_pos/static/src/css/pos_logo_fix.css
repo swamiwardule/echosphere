@@ -1,0 +1,6 @@
+.pos .pos-branding img.pos-logo {
+    content: url('/custom_branding_pos/static/src/img/oakmont-logo.png') !important;
+    max-width: 200px !important;
+    width: 200px !important;
+    height: auto !important;
+}
