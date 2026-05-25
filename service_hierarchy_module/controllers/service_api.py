@@ -541,53 +541,89 @@ class ServiceAPI(http.Controller):
                 status=500
             )
         
-    @http.route('/api/popular_services', type='http',
-                auth='public', methods=['GET'],
-                csrf=False, cors='*')
+    @http.route('/api/popular_services',
+                type='http',
+                auth='public',
+                methods=['GET'],
+                csrf=False,
+                cors='*')
     def popular_services(self):
 
         try:
 
-            services = request.env['service.service'].sudo().search([
+            services = request.env[
+                'service.service'
+            ].sudo().search([
+
                 ('is_popular', '=', True),
                 ('active', '=', True)
+
             ], order='sequence asc')
 
             data = []
 
             for service in services:
 
-                # Find subservices
+                # --------------------------------
+                # FIND SUBSERVICES
+                # --------------------------------
                 subservices = request.env[
                     'service.subservice'
                 ].sudo().search([
+
                     ('service_id', '=', service.id)
+
                 ])
 
-                # Find one random/latest detail
+                # --------------------------------
+                # FIND DETAIL WITH GALLERY
+                # --------------------------------
                 detail = request.env[
                     'service.detail'
                 ].sudo().search([
+
                     ('subservice_id', 'in', subservices.ids),
-                    ('image', '!=', False)
+                    ('gallery_ids', '!=', False)
+
                 ], limit=1, order='id desc')
 
                 image = False
 
-                if detail and detail.image:
-                    image = detail.image.decode()
+                # --------------------------------
+                # GET FIRST GALLERY IMAGE
+                # --------------------------------
+                if detail and detail.gallery_ids:
+
+                    first_image = detail.gallery_ids[0]
+
+                    if first_image.image:
+
+                        image = first_image.image.decode()
 
                 data.append({
-                    'id': service.id,
-                    'name': service.name,
-                    'description': service.description,
-                    'image': image,
+
+                    'id':
+                        service.id,
+
+                    'name':
+                        service.name,
+
+                    'description':
+                        service.description,
+
+                    'image':
+                        image,
+
                 })
 
             return Response(
                 json.dumps({
+
                     'status': 'SUCCESS',
-                    'data': data
+
+                    'data':
+                        data
+
                 }),
                 content_type='application/json',
                 status=200
@@ -597,61 +633,104 @@ class ServiceAPI(http.Controller):
 
             return Response(
                 json.dumps({
+
                     'status': 'ERROR',
-                    'message': str(e)
+
+                    'message':
+                        str(e)
+
                 }),
                 content_type='application/json',
                 status=500
             )
         
-    @http.route('/api/other_services', type='http',
-            auth='public', methods=['GET'],
-            csrf=False, cors='*')
+    @http.route('/api/other_services',
+                type='http',
+                auth='public',
+                methods=['GET'],
+                csrf=False,
+                cors='*')
     def other_services(self):
 
         try:
 
-            services = request.env['service.service'].sudo().search([
+            services = request.env[
+                'service.service'
+            ].sudo().search([
+
                 ('is_popular', '=', False),
                 ('active', '=', True)
+
             ], order='sequence asc')
 
             data = []
 
             for service in services:
 
-                # Find subservices
+                # --------------------------------
+                # FIND SUBSERVICES
+                # --------------------------------
                 subservices = request.env[
                     'service.subservice'
                 ].sudo().search([
+
                     ('service_id', '=', service.id)
+
                 ])
 
+                # --------------------------------
+                # FIND DETAILS WITH GALLERY
+                # --------------------------------
                 details = request.env[
                     'service.detail'
                 ].sudo().search([
+
                     ('subservice_id', 'in', subservices.ids),
-                    ('image', '!=', False)
+                    ('gallery_ids', '!=', False)
+
                 ])
 
                 detail = details and random.choice(details) or False
 
                 image = False
 
-                if detail and detail.image:
-                    image = detail.image.decode()
+                # --------------------------------
+                # RANDOM GALLERY IMAGE
+                # --------------------------------
+                if detail and detail.gallery_ids:
+
+                    random_gallery = random.choice(
+                        detail.gallery_ids
+                    )
+
+                    if random_gallery.image:
+
+                        image = random_gallery.image.decode()
 
                 data.append({
-                    'id': service.id,
-                    'name': service.name,
-                    'description': service.description,
-                    'image': image,
+
+                    'id':
+                        service.id,
+
+                    'name':
+                        service.name,
+
+                    'description':
+                        service.description,
+
+                    'image':
+                        image,
+
                 })
 
             return Response(
                 json.dumps({
+
                     'status': 'SUCCESS',
-                    'data': data
+
+                    'data':
+                        data
+
                 }),
                 content_type='application/json',
                 status=200
@@ -661,8 +740,12 @@ class ServiceAPI(http.Controller):
 
             return Response(
                 json.dumps({
+
                     'status': 'ERROR',
-                    'message': str(e)
+
+                    'message':
+                        str(e)
+
                 }),
                 content_type='application/json',
                 status=500
