@@ -30,6 +30,20 @@ function Hero() {
           Discover healthcare support, hotels, grocery stores, daily needs, fitness services, and more from verified
           local providers in one simple place.
         </p>
+        <div className='hero-metrics' aria-label='Echosphere service highlights'>
+          <div>
+            <strong>Verified</strong>
+            <span>local providers</span>
+          </div>
+          <div>
+            <strong>Quick</strong>
+            <span>call and WhatsApp access</span>
+          </div>
+          <div>
+            <strong>Nearby</strong>
+            <span>region-wise discovery</span>
+          </div>
+        </div>
         <div className='hero-actions'>
           <button onClick={() => navigate('/services')} className='neon-button'>
             Explore Services

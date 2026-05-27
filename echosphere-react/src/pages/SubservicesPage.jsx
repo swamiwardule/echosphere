@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { formatImageUrl, getSubservices } from '../api/apiService'
+import { useScrollAnimation } from '../useScrollAnimation'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 
@@ -11,6 +12,7 @@ function SubservicesPage() {
   const [subservices, setSubservices] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const { ref: gridRef, isInView: gridInView } = useScrollAnimation({ triggerOnce: true, threshold: 0.1 })
 
   useEffect(() => {
     if (!id) return
@@ -55,7 +57,7 @@ function SubservicesPage() {
         {error && <div className='error'>{error}</div>}
 
         {!loading && !error && (
-          <div className='subservice-grid'>
+          <div ref={gridRef} className='subservice-grid'>
             {subservices.length > 0 ? (
               subservices.map((item) => (
                 <motion.article
@@ -63,7 +65,7 @@ function SubservicesPage() {
                   className='subservice-card'
                   onClick={() => navigate(`/service-details/${item.id}`)}
                   initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  animate={gridInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                   transition={{ duration: 0.4 }}
                 >
                   {item.image ? (

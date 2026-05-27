@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import StatCard from '../components/StatCard'
 import ownerImage from '../assets/owner.jpeg'
 
 function AboutPage() {
@@ -40,10 +41,7 @@ function AboutPage() {
 
         <section className='container about-stat-grid'>
           {stats.map(([value, label]) => (
-            <div className='about-stat-card' key={label}>
-              <strong>{value}</strong>
-              <span>{label}</span>
-            </div>
+            <StatCard key={label} value={value} label={label} />
           ))}
         </section>
 

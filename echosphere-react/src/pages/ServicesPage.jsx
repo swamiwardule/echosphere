@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { getServices } from '../api/apiService'
+import { useScrollAnimation } from '../useScrollAnimation'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 
@@ -12,6 +13,7 @@ function ServicesPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const navigate = useNavigate()
+  const { ref: gridRef, isInView: gridInView } = useScrollAnimation({ triggerOnce: true, threshold: 0.1 })
 
   useEffect(() => {
     fetchServices()
@@ -73,7 +75,7 @@ function ServicesPage() {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
       <Navbar />
 
-      <div style={{ marginTop: '100px', textAlign: 'center', marginBottom: 'var(--space-lg)' }}>
+      <div className='page-intro'>
         <motion.div
           initial={{ y: 40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -88,25 +90,23 @@ function ServicesPage() {
 
       <div className='container'>
         <motion.div
-          className='glass-panel'
-          style={{ padding: 'var(--space-md)', marginBottom: 'var(--space-lg)', display: 'flex', flexDirection: 'column', gap: '15px' }}
+          className='search-panel'
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <div style={{ display: 'flex', gap: '15px' }}>
+          <div className='search-row'>
             <input
               type='text'
-              style={{ flex: 1, padding: '12px 20px', fontSize: '1rem', outline: 'none' }}
               placeholder='Search services by name or description...'
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <motion.button className='neon-button' style={{ padding: '12px 24px' }} whileHover={{ scale: 1.05 }}>
+            <motion.button className='neon-button' whileHover={{ scale: 1.05 }}>
               Search
             </motion.button>
           </div>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', textAlign: 'right' }}>
+          <p className='result-count'>
             Showing {filteredServices.length} service{filteredServices.length !== 1 ? 's' : ''}
           </p>
         </motion.div>
@@ -125,7 +125,13 @@ function ServicesPage() {
         )}
 
         {!loading && !error && (
-          <motion.div className='grid' variants={containerVariants} initial='hidden' animate='visible'>
+          <motion.div 
+            ref={gridRef}
+            className='grid' 
+            variants={containerVariants} 
+            initial='hidden' 
+            animate={gridInView ? 'visible' : 'hidden'}
+          >
             {filteredServices.length > 0 ? (
               filteredServices.map((service, index) => (
                 <motion.div
@@ -137,7 +143,7 @@ function ServicesPage() {
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                     <div className='service-icon-wrapper' style={{ marginBottom: 0 }}>
-                      <i className="fa-solid fa-leaf"></i>
+                      <span className='service-icon-letter'>{service.name?.charAt(0) || 'E'}</span>
                     </div>
                     <motion.div style={{ color: 'var(--accent-primary)', fontWeight: 'bold' }} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2 }}>
                       #{index + 1}

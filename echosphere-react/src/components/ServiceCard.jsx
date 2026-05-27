@@ -54,7 +54,7 @@ function ServiceCard({ item, onClick }) {
       >
         <div style={{ transform: "translateZ(30px)", display: 'flex', flexDirection: 'column', height: '100%' }}>
           <div className="service-icon-wrapper">
-            <i className="fa-solid fa-layer-group"></i>
+            <span className='service-icon-letter'>ES</span>
           </div>
 
           {item.image && (
